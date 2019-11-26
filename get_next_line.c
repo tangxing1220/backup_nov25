@@ -75,32 +75,68 @@ static char			*ft_strjoin(char const *s1, char const *s2)
 
  int			gnl_verify_line(char **stack, char **line)
 {
-	char			*tmp_stack;
-	char			*strchr_stack;
-	char			*temp_line;
-	char			*temp_stack;
-	int				i;
-	int 			len;
+	int		i;
+	int		len;
+	char	*tmp_stack;
+	char	*strchr_stack;
+	
+
+	strchr_stack = *stack;
 
 	i = 0;
-	strchr_stack = *stack;
 	len = ft_strlen(strchr_stack);
-	while (strchr_stack[i] != '\n')
-		if (!strchr_stack[i++])
-			return (0);
-	tmp_stack = &strchr_stack[i+1];
-	temp_line = (char *)malloc(sizeof(char) * (i + 1));  
-	temp_stack = (char *)malloc(sizeof(char) * (len - i));
-	ft_strncpy(temp_line, strchr_stack,i);
-	temp_line[i]= '\0';
-	ft_strncpy(temp_stack, tmp_stack, (len - i));
-	temp_stack[len - i - 1] = '\0'; 
+	while(strchr_stack[i] != '\0')
+	{
+		if (strchr_stack[i] == '\n')
+		{   
+			if (i == (len - 1))
+			{
+				*line = ft_strsub(&strchr_stack[0], 0, i);
+				tmp_stack = NULL;
+			}
+			else if (i == 0)
+			{
+				*line = ft_strsub(&strchr_stack[0], 0, i);
+				tmp_stack = ft_strdup(&strchr_stack[i + 1]);
+			}
+			else
+			{
+				*line = ft_strsub(&strchr_stack[0], 0, i);
+				tmp_stack = ft_strdup(&strchr_stack[i + 1]);
+			}			
+			free(*stack);
+			*stack = tmp_stack;
+			return (1);
+		}
+	i++;
+	}
+	return (0);
+//	char			*tmp_stack;
+//	char			*strchr_stack;
+//	char			*temp_line;
+//	char			*temp_stack;
+//	int				i;
+//	int 			len;
+
+//	i = 0;
+//	strchr_stack = *stack;
+//	len = ft_strlen(strchr_stack);
+//	while (strchr_stack[i] != '\n')
+//		if (!strchr_stack[i++])
+//			return (0);
+//	tmp_stack = &strchr_stack[i+1];
+//	temp_line = (char *)malloc(sizeof(char) * (i + 1));  
+//	temp_stack = (char *)malloc(sizeof(char) * (len - i));
+//	ft_strncpy(temp_line, strchr_stack,i);
+//	temp_line[i]= '\0';
+//	ft_strncpy(temp_stack, tmp_stack, (len - i));
+//	temp_stack[len - i - 1] = '\0'; 
 //	free(*stack);
-	free(strchr_stack);
-	strchr_stack = NULL;
+//	free(strchr_stack);
+//	strchr_stack = NULL;
 //	*stack = NULL;
-	*line = temp_line;
-	*stack = temp_stack;
+//	*line = temp_line;
+//	*stack = temp_stack;
 //	temp_stack = (char
 //	tmp_stack = &strchr_stack[i + 1];
 //	strchr_stack[i] = '\0';
@@ -118,7 +154,7 @@ static char			*ft_strjoin(char const *s1, char const *s2)
 //	}
 //	if(ft_strcmp(tmp_stack, "") != 0)
 //		free(tmp_stack);
-	return (1);
+//	return (1);
 }
 
 /*
@@ -189,7 +225,10 @@ int					get_next_line(int const fd, char **line)
 		return (-1);
 	if (stack[fd])
 		if (gnl_verify_line(&stack[fd], line))
+		{
+			free(heap);
 			return (1);
+		}
 	i = 0;
 	while (i < BUFF_SIZE)
 		heap[i++] = '\0';
